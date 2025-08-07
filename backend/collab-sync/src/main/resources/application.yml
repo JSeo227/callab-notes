@@ -1,2 +1,15 @@
-jwt:
-  secret: 879c85adb4bcf96bf7e9d5bbb3861ecbb9603bab494aca15d6704bbb77fcdee0
+spring:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace

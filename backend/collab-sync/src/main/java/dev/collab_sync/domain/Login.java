@@ -15,7 +15,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Login {
+public class Login extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,14 +28,6 @@ public class Login {
     private String passwordHash;        // bcrypt 등 해시된 비밀번호
 
     private Integer failedLoginCount;   // 로그인 실패 횟수
-
-    @JsonIgnore
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
 
     @Override
     public String toString() {
