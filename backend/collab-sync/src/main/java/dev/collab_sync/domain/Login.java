@@ -25,9 +25,9 @@ public class Login {
     private Member member;
 
     @Column(nullable = false)
-    private String passwordHash;                // bcrypt 등 해시된 비밀번호
+    private String passwordHash;        // bcrypt 등 해시된 비밀번호
 
-    private Integer failedLoginCount;               // 로그인 실패 횟수
+    private Integer failedLoginCount;   // 로그인 실패 횟수
 
     @JsonIgnore
     private LocalDateTime createdAt;
