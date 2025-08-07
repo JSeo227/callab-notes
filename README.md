@@ -12,12 +12,18 @@
 
 ## 2. 구조
 Frontend (React + Y.js)
-↕ WebSocket (SockJS)
+
+  ↕ WebSocket (SockJS)
+  
 Spring Boot WebSocket Server (동기화 메시지 중계 및 관리)
-↕
+
+  ↕
+  
 Redis (세션 관리, 임시 문서 상태 캐싱)
-↕
-DB (문서 저장 - MongoDB, MySQL 등)
+
+  ↕
+  
+DB (문서 저장 - MongoDb, MySQL ... )
 
 ---
 
