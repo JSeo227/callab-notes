@@ -23,7 +23,7 @@ Redis (세션 관리, 임시 문서 상태 캐싱)
 
 ↕
   
-DB (문서 저장 - MongoDb, MySQL ... )
+DB (문서 저장 - MongoDb / MySQL)
 
 ---
 
