@@ -1,10 +1,9 @@
 package dev.collab_sync.service;
 
-import dev.collab_sync.controller.dto.CustomUserDetails;
+import dev.collab_sync.controller.dto.UserDetails;
 import dev.collab_sync.domain.Member;
 import dev.collab_sync.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,17 +17,17 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+public class UserDetailService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    
+
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Member member = memberRepository.findByEmail(email);
 
         if (member != null) {
-            return new CustomUserDetails(member);
+            return new UserDetails(member);
         }
 
         throw new UsernameNotFoundException("Not found: " + email);

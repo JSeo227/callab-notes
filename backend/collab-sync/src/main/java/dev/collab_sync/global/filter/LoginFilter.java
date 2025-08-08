@@ -1,5 +1,7 @@
 package dev.collab_sync.global.filter;
 
+import dev.collab_sync.controller.dto.UserDetails;
+import dev.collab_sync.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,9 +12,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * 커스텀 로그인 필터
@@ -21,18 +26,14 @@ import java.io.IOException;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
+public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     /**
      * 사용자 인증 시도
      * HTTP 요청에서 email(사용자명 대신), password, username을 추출하여 인증 토큰 생성
-     *
-     * @param request
-     * @param response
-     * @return
-     * @throws AuthenticationException
      */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -52,6 +53,20 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("Successfully authenticated user {}", authResult.getName());
+
+        UserDetails customUserDetails = (UserDetails) authResult.getPrincipal();
+
+        String email = customUserDetails.getUsername();
+
+        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+
+        String role = auth.getAuthority();
+
+        String token = jwtUtil.generateAccessToken(email, role);
+
+        response.addHeader("Authorization", "Bearer " + token);
     }
 
     /**
@@ -61,5 +76,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info("Authentication failed {}", failed.getMessage());
+        response.setStatus(401);
     }
 }

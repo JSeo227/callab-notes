@@ -2,16 +2,15 @@ package dev.collab_sync.controller.dto;
 
 import dev.collab_sync.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class CustomUserDetails implements UserDetails {
+public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
 
     private final Member member;
 
-    public CustomUserDetails(Member member) {
+    public UserDetails(Member member) {
         this.member = member;
     }
 

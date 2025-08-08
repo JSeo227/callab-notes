@@ -1,21 +1,74 @@
 spring:
+  profiles:
+    active: dev
+  
+  jwt:
+    secret: ${JWT_SECRET:ZGV2LXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktbm90LWZvci1wcm9kdWN0aW9uLXVzZS1lbnZpcm9ubWVudC12YXJpYWJsZS1pbi1wcm9k}
+    expiration: ${JWT_EXPIRATION:86400000} # 24시간 (밀리초)
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION:1000*60*60} # 7일 (밀리초)
+    header: ${JWT_HEADER:Authorization}
+    prefix: ${JWT_PREFIX:Bearer }
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/collab_notes
-    username: root
-    password: 1234
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:1234}
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: ${DDL_AUTO:create}
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-
+        show_sql: ${SHOW_SQL:true}
+        format_sql: ${FORMAT_SQL:true}
 
 logging:
   level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
+    org.hibernate.SQL: ${LOG_SQL_LEVEL:debug}
+    org.hibernate.orm.jdbc.bind: ${LOG_BIND_LEVEL:trace}
+    dev.collab_sync: ${APP_LOG_LEVEL:debug}
+
+---
+# application-dev.yml (개발 환경)
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  jwt:
+    secret: ZGV2LXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktbm90LWZvci1wcm9kdWN0aW9uLXVzZQ==
+    expiration: 1000*60*10 # 10분 (개발용 짧게)
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 개발용
+    show-sql: true
+
+---
+# application-prod.yml (운영 환경)
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jwt:
+    secret: ${JWT_SECRET} # 반드시 환경변수에서
+    expiration: ${JWT_EXPIRATION:86400000}
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate # 운영용
+    show-sql: false
+
+logging:
+  level:
+    org.hibernate.SQL: warn
+    org.hibernate.orm.jdbc.bind: warn
+    dev.collab_sync: info
+
