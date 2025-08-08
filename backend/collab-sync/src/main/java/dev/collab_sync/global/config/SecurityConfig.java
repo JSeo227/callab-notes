@@ -22,7 +22,6 @@ public class SecurityConfig {
 
         /*
           CSRF : 사용자의 의도와 무관하게 요청이 전달되는 공격을 방지하는 보안 기능.
-          JWT는 세션을 사용하지 않으므로 CSRF 보호가 필요 없어 비활성화함.
          */
 
         //csrf disable
