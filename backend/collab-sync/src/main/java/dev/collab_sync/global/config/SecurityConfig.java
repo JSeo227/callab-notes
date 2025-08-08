@@ -24,22 +24,22 @@ public class SecurityConfig {
           CSRF : 사용자의 의도와 무관하게 요청이 전달되는 공격을 방지하는 보안 기능.
          */
 
-        //csrf disable
+        // CSRF Disable
         http.csrf((auth) -> auth.disable());
 
-        //From 로그인 방식 disable
+        // From 로그인 방식 Disable
         http.formLogin((auth) -> auth.disable());
 
-        //http basic 인증 방식 disable
+        // http basic 인증 방식 Disable
         http.httpBasic((auth) -> auth.disable());
 
-        //경로별 인가 작업
+        // URL별 접근 제어
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/login", "/", "/join").permitAll()    // 무조건 인가
                 .requestMatchers("/admin").hasRole("ADMIN")                 // Admin만 인가
                 .anyRequest().authenticated());                               // 로그인한 사용자만
 
-        //세션 설정 (Stateless)
+        // 세션 설정 (Stateless)
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
