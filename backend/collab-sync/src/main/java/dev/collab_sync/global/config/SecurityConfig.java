@@ -1,6 +1,6 @@
 package dev.collab_sync.global.config;
 
-import dev.collab_sync.global.filter.LoginFilter;
+import dev.collab_sync.global.filter.CustomLoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated());                               // 로그인한 사용자만
 
         // Loing 필터 등록 (UsernamePasswordAuthenticationFilter 대체용도 : addFilterAt)
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new CustomLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
 
         // 세션 설정 (Stateless)
         http.sessionManagement((session) -> session
