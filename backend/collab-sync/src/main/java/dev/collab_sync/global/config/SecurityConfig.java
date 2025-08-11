@@ -3,6 +3,9 @@ package dev.collab_sync.global.config;
 import dev.collab_sync.global.filter.JwtFilter;
 import dev.collab_sync.global.filter.LoginFilter;
 import dev.collab_sync.global.jwt.JwtUtil;
+import dev.collab_sync.repository.LoginRepository;
+import dev.collab_sync.service.LoginService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +17,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final LoginService loginService;
 
     private final JwtUtil jwtUtil;
 
@@ -38,6 +47,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        /*
+          CORS : 서로 다른 출처(origin) 간에 안전하게 자원을 공유할 수 있도록 허용하는 보안 정책.
+        */
+
+        // CORS Setting
+        http.cors((auth) -> auth.configurationSource((CorsConfigurationSource) request -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+
+            configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+            configuration.setAllowedMethods(Collections.singletonList("*"));
+            configuration.setAllowCredentials(true);
+            configuration.setAllowedHeaders(Collections.singletonList("*"));
+            configuration.setMaxAge(3600L);
+            configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+            return configuration;
+        }));
 
         /*
           CSRF : 사용자의 의도와 무관하게 요청이 전달되는 공격을 방지하는 보안 기능.
@@ -62,7 +88,7 @@ public class SecurityConfig {
         http.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
 
         // Loing 필터 등록 (UsernamePasswordAuthenticationFilter 대체용도 : addFilterAt)
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, loginService), UsernamePasswordAuthenticationFilter.class);
 
         // 세션 설정 (Stateless)
         http.sessionManagement((session) -> session
