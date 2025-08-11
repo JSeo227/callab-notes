@@ -38,11 +38,11 @@ spring:
   
   jwt:
     secret: ZGV2LXNlY3JldC1rZXktZm9yLWRldmVsb3BtZW50LW9ubHktbm90LWZvci1wcm9kdWN0aW9uLXVzZQ==
-    expiration: 1000*60*10 # 10분 (개발용 짧게)
+    expiration: 600000  # 10분 (개발용 짧게)
 
   jpa:
     hibernate:
-      ddl-auto: create-drop # 개발용
+      ddl-auto: update # 개발용
     show-sql: true
 
 ---
