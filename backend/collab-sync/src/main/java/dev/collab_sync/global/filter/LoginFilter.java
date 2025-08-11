@@ -1,7 +1,11 @@
 package dev.collab_sync.global.filter;
 
-import dev.collab_sync.controller.dto.UserDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.collab_sync.controller.dto.MemberDetails;
+import dev.collab_sync.domain.Login;
 import dev.collab_sync.global.jwt.JwtUtil;
+import dev.collab_sync.repository.LoginRepository;
+import dev.collab_sync.service.LoginService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +20,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -25,12 +30,20 @@ import java.util.Iterator;
  * email을 사용자 식별자로 사용하며, JWT 기반 인증을 위해 구현
  */
 @Slf4j
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final LoginService loginService;
 
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, LoginService loginService) {
+        super.setAuthenticationManager(authenticationManager);
+        super.setUsernameParameter("email");  // jwt 토큰 식별자 username → email로 변경
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.loginService = loginService;
+    }
     /**
      * 사용자 인증 시도
      * HTTP 요청에서 email(사용자명 대신), password, username을 추출하여 인증 토큰 생성
@@ -52,19 +65,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
      */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        log.info("Successfully authenticated user {}", authResult.getName());
 
-        UserDetails customUserDetails = (UserDetails) authResult.getPrincipal();
+        MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
 
-        String email = customUserDetails.getUsername();
+        String email = memberDetails.getUsername();
+        log.info("Successfully logged in email: {}", email);
 
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
+        log.info("Successfully logged in role: {}", role);
+
+        loginService.login(email);
 
         String token = jwtUtil.generateAccessToken(email, role);
+        log.info("Successfully logged in token: {}", token);
 
         response.addHeader("Authorization", "Bearer " + token);
     }
