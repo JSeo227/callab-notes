@@ -8,10 +8,12 @@ import dev.collab_sync.repository.LoginRepository;
 import dev.collab_sync.service.LoginService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -66,7 +68,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
-        MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
+/*        MemberDetails memberDetails = (MemberDetails) authResult.getPrincipal();
 
         String email = memberDetails.getUsername();
         log.info("Successfully logged in email: {}", email);
@@ -83,7 +85,33 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.generateAccessToken(email, role);
         log.info("Successfully logged in token: {}", token);
 
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader("Authorization", "Bearer " + token);*/
+
+        String email = authResult.getName();
+
+        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
+
+        //토큰 생성
+        String access = jwtUtil.generateAccessToken(email, role);
+        String refresh = jwtUtil.generateRefreshToken(email, role);
+
+        //응답 설정
+        response.setHeader("access", access);
+        response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
+
+    }
+
+    private Cookie createCookie(String key, String value) {
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+//        cookie.setSecure(true);           // https
+//        cookie.setPath("/");              // 범위
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 
     /**

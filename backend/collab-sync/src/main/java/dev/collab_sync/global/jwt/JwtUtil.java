@@ -36,6 +36,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .subject(email)
+                .claim("type", "access")
                 .claim("email", email)
                 .claim("role", role)
                 .issuedAt(now)
@@ -47,13 +48,15 @@ public class JwtUtil {
     /**
      * 리프레쉬 토큰 생성
      */
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(String email, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + (expiration * 3));
 
         return Jwts.builder()
                 .subject(email)
                 .claim("type", "refresh")
+                .claim("email", email)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(secretKey)
@@ -97,6 +100,11 @@ public class JwtUtil {
             log.error("Error checking token expiration: {}", e.getMessage());
             return true;
         }
+    }
+
+    public String getTypeFromToken(String token) {
+        return getClaimsFromToken(token)
+                .get("type", String.class);
     }
 
     public String getEmailFromToken(String token) {

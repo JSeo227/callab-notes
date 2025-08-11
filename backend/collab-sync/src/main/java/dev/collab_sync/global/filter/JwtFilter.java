@@ -27,8 +27,6 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String authorization = request.getHeader("Authorization");
-        log.info("Authorization: {}", authorization);
-
 
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             log.info("Token null");
@@ -43,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         //토큰 소멸 시간 검증
         if (jwtUtil.isTokenExpired(token)) {
 
-            log.info("token expired");
+            log.info("Token expired");
             filterChain.doFilter(request, response);
 
             //조건이 해당되면 메소드 종료 (필수)
@@ -53,9 +51,6 @@ public class JwtFilter extends OncePerRequestFilter {
         //토큰에서 username과 role 획득
         String email = jwtUtil.getEmailFromToken(token);
         String role = jwtUtil.getRoleFromToken(token);
-
-        log.info("email: {}", email);
-        log.info("role: {}", role);
 
         //userEntity를 생성하여 값 set
         Member member = Member.builder()

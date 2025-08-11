@@ -84,7 +84,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin").hasRole("ADMIN")                 // Admin만 인가
                 .anyRequest().authenticated());                               // 로그인한 사용자만
 
-        // JwtFilter 등록
+        // Jwt 필터 등록
         http.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
 
         // Loing 필터 등록 (UsernamePasswordAuthenticationFilter 대체용도 : addFilterAt)
