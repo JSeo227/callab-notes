@@ -30,7 +30,4 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private RoleType role;
 
-    @JsonIgnore
-    private LocalDateTime lastLoginAt;
-
 }

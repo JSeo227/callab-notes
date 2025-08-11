@@ -1,8 +1,10 @@
 package dev.collab_sync.service;
 
 import dev.collab_sync.controller.dto.JoinDto;
+import dev.collab_sync.domain.Login;
 import dev.collab_sync.domain.Member;
 import dev.collab_sync.domain.RoleType;
+import dev.collab_sync.repository.LoginRepository;
 import dev.collab_sync.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class JoinService {
 
     private final MemberRepository memberRepository;
+    private final LoginRepository loginRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void join(JoinDto dto) {
@@ -41,6 +44,16 @@ public class JoinService {
                 .build();
 
         memberRepository.save(member);
+
+        Login login = Login.builder()
+                .member(member)
+                .failedLoginCount(0)
+                .isLoggedIn(false)
+                .lastLoginAt(null)
+                .build();
+
+        loginRepository.save(login);
+
     }
 
 }

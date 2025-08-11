@@ -1,11 +1,13 @@
 package dev.collab_sync.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Data
@@ -22,10 +24,12 @@ public class Login extends BaseTimeEntity {
     @JoinColumn(name = "member_id", nullable = false, unique = true)
     private Member member;
 
-    @Column(nullable = false)
-    private String passwordHash;        // bcrypt 등 해시된 비밀번호
-
     private Integer failedLoginCount;   // 로그인 실패 횟수
+
+    private Boolean isLoggedIn;           // 로그인 여부
+
+    @JsonIgnore
+    private LocalDateTime lastLoginAt;
 
     @Override
     public String toString() {
