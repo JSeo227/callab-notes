@@ -1,18 +1,17 @@
 package dev.collab_sync.controller.dto;
 
 import dev.collab_sync.domain.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
+@RequiredArgsConstructor
+public class MemberDetails implements UserDetails {
 
     private final Member member;
-
-    public UserDetails(Member member) {
-        this.member = member;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
