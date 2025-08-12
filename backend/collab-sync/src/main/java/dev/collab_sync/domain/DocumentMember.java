@@ -1,5 +1,6 @@
 package dev.collab_sync.domain;
 
+import dev.collab_sync.domain.common.RoleType;
 import dev.collab_sync.domain.document.Document;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

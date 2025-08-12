@@ -1,5 +1,7 @@
 package dev.collab_sync.controller;
 
+import dev.collab_sync.domain.RefreshToken;
+import dev.collab_sync.service.RefreshService;
 import dev.collab_sync.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static dev.collab_sync.util.CookieUtil.createCookie;
@@ -22,6 +25,7 @@ import static dev.collab_sync.util.CookieUtil.createCookie;
 public class ReissueController {
 
     private final JwtUtil jwtUtil;
+    private final RefreshService refreshService;
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
@@ -61,6 +65,13 @@ public class ReissueController {
             return new ResponseEntity<>("Invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
+        //DB에 저장되어 있는지 확인
+        Boolean isExist = refreshService.exists(refresh);
+        if (!isExist) {
+            //response body
+            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+        }
+
         String email = jwtUtil.getEmailFromToken(refresh);
         String role = jwtUtil.getRoleFromToken(refresh);
 
@@ -68,9 +79,19 @@ public class ReissueController {
         String newAccess = jwtUtil.generateAccessToken(email, role);
         String makeNewRefresh = jwtUtil.generateRefreshToken(email, role);
 
+        //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
+        refreshService.delete(refresh);
+        LocalDateTime expiresAt = LocalDateTime.now().plusDays(1); // 1일 뒤 만료
+        RefreshToken refreshToken = RefreshToken.builder()
+                .email(email)
+                .refreshToken(refresh)
+                .expiresAt(expiresAt)
+                .build();
+        refreshService.save(refreshToken);
+
         //response
         response.setHeader("access", newAccess);
-        response.addCookie(createCookie(newAccess, makeNewRefresh, false));
+        response.addCookie(createCookie("refresh", makeNewRefresh, false));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

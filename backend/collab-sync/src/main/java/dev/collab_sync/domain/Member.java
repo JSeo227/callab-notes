@@ -1,10 +1,9 @@
 package dev.collab_sync.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import dev.collab_sync.domain.common.BaseTimeEntity;
+import dev.collab_sync.domain.common.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

@@ -1,5 +1,8 @@
 package dev.collab_sync.filter;
 
+import dev.collab_sync.domain.RefreshToken;
+import dev.collab_sync.repository.RefreshRepository;
+import dev.collab_sync.service.RefreshService;
 import dev.collab_sync.util.JwtUtil;
 import dev.collab_sync.service.LoginService;
 import jakarta.servlet.FilterChain;
@@ -16,7 +19,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import static dev.collab_sync.util.CookieUtil.createCookie;
@@ -33,13 +38,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final LoginService loginService;
+    private final RefreshService refreshService;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, LoginService loginService) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, LoginService loginService, RefreshService refreshService) {
         super.setAuthenticationManager(authenticationManager);
         super.setUsernameParameter("email");  // jwt 토큰 식별자 username → email로 변경
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.loginService = loginService;
+        this.refreshService = refreshService;
     }
     /**
      * 사용자 인증 시도
@@ -95,6 +102,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //토큰 생성
         String access = jwtUtil.generateAccessToken(email, role);
         String refresh = jwtUtil.generateRefreshToken(email, role);
+
+        //Refresh 토큰 저장
+        LocalDateTime expiresAt = LocalDateTime.now().plusDays(1); // 1일 뒤 만료
+        RefreshToken refreshToken = RefreshToken.builder()
+                .email(email)
+                .refreshToken(refresh)
+                .expiresAt(expiresAt)
+                .build();
+        refreshService.save(refreshToken);
 
         //응답 설정
         response.setHeader("access", access);

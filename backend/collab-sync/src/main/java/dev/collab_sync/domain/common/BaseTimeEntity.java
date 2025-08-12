@@ -1,4 +1,4 @@
-package dev.collab_sync.domain;
+package dev.collab_sync.domain.common;
 
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;

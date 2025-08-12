@@ -1,14 +1,11 @@
 package dev.collab_sync.domain.document;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import dev.collab_sync.domain.BaseTimeEntity;
+import dev.collab_sync.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @Entity

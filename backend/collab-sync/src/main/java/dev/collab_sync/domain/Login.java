@@ -1,6 +1,7 @@
 package dev.collab_sync.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import dev.collab_sync.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
