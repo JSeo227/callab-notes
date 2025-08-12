@@ -1,6 +1,6 @@
 package dev.collab_sync.controller;
 
-import dev.collab_sync.controller.dto.JoinDto;
+import dev.collab_sync.dto.JoinDto;
 import dev.collab_sync.service.JoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

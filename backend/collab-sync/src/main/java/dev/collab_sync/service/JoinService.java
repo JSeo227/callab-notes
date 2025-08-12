@@ -1,6 +1,6 @@
 package dev.collab_sync.service;
 
-import dev.collab_sync.controller.dto.JoinDto;
+import dev.collab_sync.dto.JoinDto;
 import dev.collab_sync.domain.Login;
 import dev.collab_sync.domain.Member;
 import dev.collab_sync.domain.RoleType;

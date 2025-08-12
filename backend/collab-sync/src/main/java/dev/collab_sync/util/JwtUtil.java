@@ -1,4 +1,4 @@
-package dev.collab_sync.global.jwt;
+package dev.collab_sync.util;
 
 import io.jsonwebtoken.*;
 

@@ -1,4 +1,4 @@
-package dev.collab_sync.controller.dto;
+package dev.collab_sync.dto;
 
 import dev.collab_sync.domain.Member;
 import lombok.RequiredArgsConstructor;

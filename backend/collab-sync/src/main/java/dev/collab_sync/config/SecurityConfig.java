@@ -1,11 +1,9 @@
-package dev.collab_sync.global.config;
+package dev.collab_sync.config;
 
-import dev.collab_sync.global.filter.JwtFilter;
-import dev.collab_sync.global.filter.LoginFilter;
-import dev.collab_sync.global.jwt.JwtUtil;
-import dev.collab_sync.repository.LoginRepository;
+import dev.collab_sync.filter.JwtFilter;
+import dev.collab_sync.filter.LoginFilter;
+import dev.collab_sync.util.JwtUtil;
 import dev.collab_sync.service.LoginService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,7 +79,8 @@ public class SecurityConfig {
         // URL별 접근 제어
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/login", "/", "/join").permitAll()    // 무조건 인가
-                .requestMatchers("/admin").hasRole("ADMIN")                 // Admin만 인가
+                .requestMatchers("/admin").hasRole("VIEWER")                 // Admin만 인가
+                .requestMatchers("/reissue").permitAll()
                 .anyRequest().authenticated());                               // 로그인한 사용자만
 
         // Jwt 필터 등록

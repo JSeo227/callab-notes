@@ -1,6 +1,6 @@
 package dev.collab_sync.service;
 
-import dev.collab_sync.controller.dto.MemberDetails;
+import dev.collab_sync.dto.MemberDetails;
 import dev.collab_sync.domain.Member;
 import dev.collab_sync.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
