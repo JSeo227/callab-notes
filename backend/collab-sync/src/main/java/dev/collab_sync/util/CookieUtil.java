@@ -169,7 +169,7 @@ public class CookieUtil {
     }
 
     public static void deleteCookie(HttpServletResponse response, String key, String path) {
-        Cookie cookie = new Cookie(key, "");
+        Cookie cookie = new Cookie(key, null);
         cookie.setMaxAge(0);
 
         // path가 null이거나 빈값이면 DEFAULT_PATH 사용

@@ -17,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -74,11 +75,14 @@ public class SecurityConfig {
         // CSRF Disable
         http.csrf((auth) -> auth.disable());
 
-        // From 로그인 방식 Disable
+        // form 로그인 방식 Disable
         http.formLogin((auth) -> auth.disable());
 
         // http basic 인증 방식 Disable
         http.httpBasic((auth) -> auth.disable());
+
+        // form 로그아웃 방식 Disable
+        http.logout((auth) -> auth.disable());
 
         // URL별 접근 제어
         http.authorizeHttpRequests((auth) -> auth
@@ -94,7 +98,7 @@ public class SecurityConfig {
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, loginService, refreshService), UsernamePasswordAuthenticationFilter.class);
 
         // Logout 필터 등록
-        http.addFilterBefore(new LogoutFilter(jwtUtil, refreshService, loginService), LogoutFilter.class);
+        http.addFilterAt(new LogoutFilter(jwtUtil, refreshService, loginService), org.springframework.security.web.authentication.logout.LogoutFilter.class);
 
         // 세션 설정 (Stateless)
         http.sessionManagement((session) -> session

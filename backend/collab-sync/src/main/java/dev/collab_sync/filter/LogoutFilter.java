@@ -2,6 +2,7 @@ package dev.collab_sync.filter;
 
 import dev.collab_sync.domain.login.LoginService;
 import dev.collab_sync.domain.refresh.RefreshService;
+import dev.collab_sync.util.CookieUtil;
 import dev.collab_sync.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -63,7 +64,6 @@ public class LogoutFilter extends GenericFilterBean {
         try {
             jwtUtil.isTokenExpired(refresh);
         } catch (ExpiredJwtException e) {
-            //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -71,7 +71,6 @@ public class LogoutFilter extends GenericFilterBean {
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getTypeFromToken(refresh);
         if (!category.equals("refresh")) {
-            //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -79,7 +78,6 @@ public class LogoutFilter extends GenericFilterBean {
         //DB에 저장되어 있는지 확인
         Boolean isExist = refreshService.exists(refresh);
         if (!isExist) {
-            //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -92,11 +90,12 @@ public class LogoutFilter extends GenericFilterBean {
         refreshService.delete(refresh);
 
         //Refresh 토큰 Cookie 값 0
-        Cookie cookie = new Cookie("refresh", null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
+        CookieUtil.deleteCookie(response, "refresh");
+//        Cookie cookie = new Cookie("refresh", null);
+//        cookie.setMaxAge(0);
+//        cookie.setPath("/");
 
-        response.addCookie(cookie);
+//        response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }
