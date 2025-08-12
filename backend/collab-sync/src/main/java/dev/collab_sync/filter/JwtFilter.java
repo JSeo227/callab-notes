@@ -1,8 +1,8 @@
 package dev.collab_sync.filter;
 
-import dev.collab_sync.dto.MemberDetails;
-import dev.collab_sync.domain.Member;
-import dev.collab_sync.domain.common.RoleType;
+import dev.collab_sync.domain.member.MemberDetails;
+import dev.collab_sync.domain.member.Member;
+import dev.collab_sync.common.type.RoleType;
 import dev.collab_sync.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

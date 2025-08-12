@@ -2,10 +2,9 @@ package dev.collab_sync.config;
 
 import dev.collab_sync.filter.JwtFilter;
 import dev.collab_sync.filter.LoginFilter;
-import dev.collab_sync.repository.RefreshRepository;
-import dev.collab_sync.service.RefreshService;
+import dev.collab_sync.domain.refresh.RefreshService;
 import dev.collab_sync.util.JwtUtil;
-import dev.collab_sync.service.LoginService;
+import dev.collab_sync.domain.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

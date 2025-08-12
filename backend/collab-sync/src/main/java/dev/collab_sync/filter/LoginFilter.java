@@ -1,10 +1,9 @@
 package dev.collab_sync.filter;
 
-import dev.collab_sync.domain.RefreshToken;
-import dev.collab_sync.repository.RefreshRepository;
-import dev.collab_sync.service.RefreshService;
+import dev.collab_sync.domain.refresh.Refresh;
+import dev.collab_sync.domain.refresh.RefreshService;
 import dev.collab_sync.util.JwtUtil;
-import dev.collab_sync.service.LoginService;
+import dev.collab_sync.domain.login.LoginService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import static dev.collab_sync.util.CookieUtil.createCookie;
@@ -105,7 +103,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //Refresh 토큰 저장
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(1); // 1일 뒤 만료
-        RefreshToken refreshToken = RefreshToken.builder()
+        Refresh refreshToken = Refresh.builder()
                 .email(email)
                 .refreshToken(refresh)
                 .expiresAt(expiresAt)
