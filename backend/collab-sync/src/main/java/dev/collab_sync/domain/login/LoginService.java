@@ -1,6 +1,7 @@
 package dev.collab_sync.domain.login;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +16,18 @@ public class LoginService {
 
     public void login(String email) {
         Login login = loginRepository.findByMemberEmail(email);
-
-        if (login != null) {
-            login.setIsLoggedIn(true);
-            login.setLastLoginAt(LocalDateTime.now());
+        if (login == null) {
+            throw new UsernameNotFoundException("No login info for email: " + email);
         }
+        login.setIsLoggedIn(true);
+        login.setLastLoginAt(LocalDateTime.now());
+    }
+
+    public void logout(String email) {
+        Login login = loginRepository.findByMemberEmail(email);
+        if (login == null) {
+            throw new UsernameNotFoundException("No login info for email: " + email);
+        }
+        login.setIsLoggedIn(false);
     }
 }

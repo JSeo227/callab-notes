@@ -2,8 +2,12 @@ package dev.collab_sync.domain.refresh;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.messaging.simp.stomp.StompReactorNettyCodec;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -16,8 +20,14 @@ public class RefreshService {
     /**
      * RefreshToken 저장
      */
-    public void save(Refresh refresh) {
-        refreshRepository.save(refresh);
+    public void save(String email, String refresh) {
+        LocalDateTime expiresAt = LocalDateTime.now().plusDays(1);
+        Refresh refreshToken = Refresh.builder()
+                .email(email)
+                .refreshToken(refresh)
+                .expiresAt(expiresAt)
+                .build();
+        refreshRepository.save(refreshToken);
     }
 
     /**
@@ -32,5 +42,12 @@ public class RefreshService {
      */
     public void delete(String refreshToken) {
         refreshRepository.deleteByRefreshToken(refreshToken);
+    }
+
+    /**
+     * RefreshToken 삭제 (기간 지난)
+     */
+    public void deleteByExpired(LocalDateTime expired) {
+        refreshRepository.deleteByExpiresAtBefore(expired);
     }
 }

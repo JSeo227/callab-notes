@@ -67,7 +67,7 @@ public class ReissueController {
         Boolean isExist = refreshService.exists(refresh);
         if (!isExist) {
             //response body
-            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Refresh token not found in database", HttpStatus.BAD_REQUEST);
         }
 
         String email = jwtUtil.getEmailFromToken(refresh);
@@ -79,13 +79,7 @@ public class ReissueController {
 
         //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         refreshService.delete(refresh);
-        LocalDateTime expiresAt = LocalDateTime.now().plusDays(1); // 1일 뒤 만료
-        Refresh refreshToken = Refresh.builder()
-                .email(email)
-                .refreshToken(refresh)
-                .expiresAt(expiresAt)
-                .build();
-        refreshService.save(refreshToken);
+        refreshService.save(email, refresh);
 
         //response
         response.setHeader("access", newAccess);

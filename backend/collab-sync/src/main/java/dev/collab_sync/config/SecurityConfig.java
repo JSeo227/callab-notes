@@ -3,6 +3,7 @@ package dev.collab_sync.config;
 import dev.collab_sync.filter.JwtFilter;
 import dev.collab_sync.filter.LoginFilter;
 import dev.collab_sync.domain.refresh.RefreshService;
+import dev.collab_sync.filter.LogoutFilter;
 import dev.collab_sync.util.JwtUtil;
 import dev.collab_sync.domain.login.LoginService;
 import lombok.RequiredArgsConstructor;
@@ -89,8 +90,11 @@ public class SecurityConfig {
         // Jwt 필터 등록
         http.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
 
-        // Loing 필터 등록 (UsernamePasswordAuthenticationFilter 대체용도 : addFilterAt)
+        // Login 필터 등록 (UsernamePasswordAuthenticationFilter 대체용도 : addFilterAt)
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, loginService, refreshService), UsernamePasswordAuthenticationFilter.class);
+
+        // Logout 필터 등록
+        http.addFilterBefore(new LogoutFilter(jwtUtil, refreshService, loginService), LogoutFilter.class);
 
         // 세션 설정 (Stateless)
         http.sessionManagement((session) -> session

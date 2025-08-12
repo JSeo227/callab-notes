@@ -102,19 +102,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.generateRefreshToken(email, role);
 
         //Refresh 토큰 저장
-        LocalDateTime expiresAt = LocalDateTime.now().plusDays(1); // 1일 뒤 만료
-        Refresh refreshToken = Refresh.builder()
-                .email(email)
-                .refreshToken(refresh)
-                .expiresAt(expiresAt)
-                .build();
-        refreshService.save(refreshToken);
+        refreshService.save(email, refresh);
 
         //응답 설정
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh, false));
         response.setStatus(HttpStatus.OK.value());
-
     }
 
     /**
